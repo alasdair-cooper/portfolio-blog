@@ -3,8 +3,6 @@ services:
     build: .
     ports:
       - "10002:80"
-    volumes:
-      - ./:/usr/share/nginx/html:ro
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
