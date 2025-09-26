@@ -2,7 +2,7 @@ services:
   portfolio-blog:
     build: .
     ports:
-      - "10000:80"
+      - "10002:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     restart: unless-stopped
