@@ -4,5 +4,8 @@
         "leptosfmt",
         "--stdin",
         "--rustfmt"
+    ],
+    "cSpell.words": [
+        "strftime"
     ]
 }
