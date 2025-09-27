@@ -1,0 +1,9 @@
+.projects {
+    display: grid;
+    gap: 3rem;
+}
+
+.projects > * {
+    border: 1px solid #00000011;
+    padding: 1.5rem;
+}
