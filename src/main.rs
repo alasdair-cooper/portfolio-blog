@@ -1,7 +1,7 @@
 #![feature(hash_map_macro)]
 
 use jiff::civil::Date;
-use leptos::{html::*, prelude::*};
+use leptos::{ev, html::*, prelude::*};
 
 fn main() {
     console_error_panic_hook::set_once();
@@ -10,11 +10,11 @@ fn main() {
 
 fn app() -> impl IntoView {
     let tags = vec![
-        Tag::Text {
+        TagData::Text {
             id: "commercial".into(),
             value: "Commercial Experience".into(),
         },
-        Tag::Text {
+        TagData::Text {
             id: "personal".into(),
             value: "Personal Project".into(),
         },
@@ -59,27 +59,97 @@ fn app() -> impl IntoView {
 }
 
 fn header() -> impl IntoView {
-    leptos::html::header().child(
-        hgroup()
-            .child(h1().child("Alasdair Cooper"))
-            .child(p().child(".NET Web Developer")),
-    )
+    leptos::html::header()
+        .child(img().src("images/me.jpg"))
+        .child(
+            hgroup()
+                .child(h1().child("Alasdair Cooper"))
+                .child(p().child(".NET Web Developer")),
+        )
 }
 
 fn intro() -> impl IntoView {
     section()
+        .class("intro")
+        .child(h2().child("About Me"))
         .child(p().child(
             "Hi, welcome to my website. My name is Alasdair and I am a .NET web developer based \
-             in Walsall, UK. This site contains a breakdown of my professional roles and hobby \
-             projects by technology used.",
+             in Walsall, UK. This site provides an overview of my professional roles and hobby \
+             projects.",
         ))
-        .child(h2().child("Using This Site"))
-        .child(p().child("Click on a tag or technology to filter by it."))
+        .child(p().child(
+            "Outside of programming, I enjoy running and cycling and I play violin & viola in a \
+             few amateur music groups.",
+        ))
+}
+
+enum AlertLevel {
+    Info,
+    Warning,
+    Error,
+}
+
+impl AlertLevel {
+    fn class(&self) -> String {
+        match self {
+            AlertLevel::Info => "info".into(),
+            AlertLevel::Warning => "warning".into(),
+            AlertLevel::Error => "error".into(),
+        }
+    }
+}
+
+fn alert(level: AlertLevel, text: impl Into<String>) -> impl IntoView {
+    div()
+        .class(format!("alert {}", level.class()))
+        .child(text.into())
+}
+
+struct ButtonContent {
+    text: String,
+    icon_url: Option<String>,
+}
+
+impl From<String> for ButtonContent {
+    fn from(value: String) -> Self {
+        Self {
+            text: value,
+            icon_url: None,
+        }
+    }
+}
+
+enum ButtonEffect {
+    Link { url: String, target: String },
+    Action { action: Callback<()> },
+}
+
+fn button(content: ButtonContent, effect: ButtonEffect) -> impl IntoView {
+    match effect {
+        ButtonEffect::Link { url, target } => a()
+            .class("button")
+            .href(url)
+            .target(target)
+            .child(content.icon_url.map(|x| img().src(x)))
+            .child(content.text)
+            .into_any(),
+        ButtonEffect::Action { action } => leptos::html::button()
+            .class("button")
+            .child(content.icon_url.map(|x| img().src(x)))
+            .child(content.text)
+            .on(ev::click, move |_| action.run(()))
+            .into_any(),
+    }
 }
 
 fn content(projects: &Vec<Project>) -> impl IntoView {
     section()
         .class("projects")
+        .child(h2().child("My Work"))
+        .child(alert(
+            AlertLevel::Info,
+            "Click on a tag or technology to filter by it.",
+        ))
         .child(projects.iter().map(|x| project(x)).collect_view())
 }
 
@@ -92,7 +162,7 @@ fn project(project: &Project) -> impl IntoView {
                     .tags
                     .iter()
                     .filter_map(|x| match x {
-                        Tag::Text { id: _, value } => Some(span().child(value.clone())),
+                        data @ TagData::Text { id: _, value: _ } => Some(tag(data)),
                         _ => None,
                     })
                     .collect_view(),
@@ -118,13 +188,16 @@ fn project(project: &Project) -> impl IntoView {
                     .links
                     .iter()
                     .map(|x| {
-                        a().href(x.url.clone()).target("_blank")
-                            .child(if let Some(icon_url) = &x.icon_url {
-                                Some(img().src(icon_url.clone()))
-                            } else {
-                                None
-                            })
-                            .child(span().child(x.text.clone()))
+                        button(
+                            ButtonContent {
+                                icon_url: x.icon_url.clone(),
+                                text: x.text.clone(),
+                            },
+                            ButtonEffect::Link {
+                                url: x.url.clone(),
+                                target: "_blank".into(),
+                            },
+                        )
                     })
                     .collect_view(),
             ),
@@ -132,17 +205,24 @@ fn project(project: &Project) -> impl IntoView {
 }
 
 #[derive(Clone)]
-enum Tag {
+enum TagData {
     Icon { id: String, icon_url: String },
     Text { id: String, value: String },
 }
 
-impl Tag {
+impl TagData {
     fn id(&self) -> &String {
         match self {
-            Tag::Icon { id, icon_url: _ } => id,
-            Tag::Text { id, value: _ } => id,
+            TagData::Icon { id, icon_url: _ } => id,
+            TagData::Text { id, value: _ } => id,
         }
+    }
+}
+
+fn tag(tag: &TagData) -> impl IntoView {
+    match tag {
+        TagData::Icon { id: _, icon_url } => img().src(icon_url.clone()).into_any(),
+        TagData::Text { id: _, value } => small().class("text-tag").child(value.clone()).into_any(),
     }
 }
 
@@ -164,7 +244,7 @@ struct ProjectData {
 }
 
 impl ProjectData {
-    fn to_project(&self, tags: &Vec<Tag>) -> Project {
+    fn to_project(&self, tags: &Vec<TagData>) -> Project {
         let mut tag_lookup = hash_map! {};
 
         for tag in tags {
@@ -192,7 +272,7 @@ struct Project {
     name: String,
     description: String,
     image_url: String,
-    tags: Vec<Tag>,
+    tags: Vec<TagData>,
     links: Vec<Link>,
     start_date: Date,
     end_date: Option<Date>,
