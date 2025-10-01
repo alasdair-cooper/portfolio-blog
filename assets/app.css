@@ -1,5 +1,6 @@
 :root {
     --border-radius: 1rem;
+    --darken: light-dark(hsl(0 0 0 / 0.1), hsl(0 0 0 / 0.5));
 }
 
 body {
@@ -61,7 +62,6 @@ footer {
 
 .alert {
     --_computed-color: var(--_color, hsl(0 100 100));
-    /* border: 1px solid var(--_computed-color); */
     border-radius: var(--border-radius);
     padding: 1rem;
     background-color: hsl(from var(--_computed-color) h s l / 0.1);
@@ -87,8 +87,8 @@ footer {
 }
 
 .projects > article {
-    border: 1px solid red;
     border-radius: var(--border-radius);
+    box-shadow: 0 0 2px 1px var(--darken), 4px 4px 4px 1px var(--darken);
     display: grid;
     gap: 1rem;
     overflow: hidden;
@@ -115,7 +115,7 @@ footer {
 
 .text-tag {
     border-radius: 100vmax;
-    background-color: light-dark(hsl(0 0 0 / 0.1), hsl(0 0 0 / 0.5));
+    background-color: var(--darken);
     padding: 0.5rem 0.75rem;
     text-box-edge: cap alphabetic;
     text-box-trim: trim-both;
