@@ -30,8 +30,8 @@ fn app() -> impl IntoView {
     let project_data = vec![
         ProjectData {
             name: "C# LDM RSS Feed".into(),
-            description: "".into(),
-            image_url: "https://lipsum.app/1920x1080/".into(),
+            description: include_str!("../assets/content/csharplang_ldm_feed.md").into(),
+            image_url: "images/csharplang_ldm_feed.png".into(),
             start_date: Date::new(2025, 09, 13).unwrap(),
             end_date: None,
             tags: vec!["personal".into()],
@@ -43,10 +43,10 @@ fn app() -> impl IntoView {
         },
         ProjectData {
             name: "ebi Portfolios".into(),
-            description: "".into(),
-            image_url: "https://lipsum.app/1920x1080/".into(),
-            start_date: Date::new(2025, 05, 01).unwrap(),
-            end_date: Some(Date::new(2023, 02, 01).unwrap()),
+            description: include_str!("../assets/content/ebi.md").into(),
+            image_url: "images/ebi.png".into(),
+            start_date: Date::new(2023, 02, 01).unwrap(),
+            end_date: Some(Date::new(2025, 05, 01).unwrap()),
             tags: vec!["commercial".into()],
             links: vec![],
         },
@@ -80,25 +80,19 @@ fn intro() -> impl IntoView {
     section()
         .class("intro")
         .child(h2().child("About Me"))
-        .child(p().child(
-            "Hi, welcome to my website. My name is Alasdair and I am a .NET web developer based \
-             in Walsall, UK. This site provides an overview of my professional roles and hobby \
-             projects.",
-        ))
-        .child(p().child(
-            "Outside of programming, I enjoy running and cycling, and I play violin & viola in a \
-             few amateur music groups.",
-        ))
+        .child(div().inner_html(markdown::to_html(include_str!(
+            "../assets/content/about_me.md"
+        ))))
 }
 
 fn content(projects: &Vec<Project>) -> impl IntoView {
     section()
         .class("projects")
         .child(h2().child("My Work"))
-        .child(alert(
-            AlertLevel::Info,
-            "Click on a tag or technology to filter by it.",
-        ))
+        // .child(alert(
+        //     AlertLevel::Info,
+        //     "Click on a tag or technology to filter by it.",
+        // ))
         .child(projects.iter().map(|x| project(x)).collect_view())
 }
 
@@ -130,7 +124,7 @@ fn project(project: &Project) -> impl IntoView {
                     format!("{} - Present", project.start_date.strftime("%B %Y"))
                 })),
         )
-        .child(project.description.clone())
+        .child(div().inner_html(markdown::to_html(&project.description)))
         .child(
             div().class("links").child(
                 project
@@ -148,10 +142,7 @@ fn project(project: &Project) -> impl IntoView {
                                 }),
                                 text: x.text.clone(),
                             },
-                            ButtonEffect::Link {
-                                url: x.url.clone(),
-                                target: "_blank".into(),
-                            },
+                            ButtonEffect::Link { url: x.url.clone() },
                         )
                     })
                     .collect_view(),

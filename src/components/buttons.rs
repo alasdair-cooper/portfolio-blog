@@ -1,7 +1,7 @@
 use leptos::{ev, html::*, prelude::*};
 
 pub enum Icon {
-    Url(String),
+    _Url(String),
     Svg(&'static str),
 }
 
@@ -20,18 +20,17 @@ impl From<String> for ButtonContent {
 }
 
 pub enum ButtonEffect {
-    Link { url: String, target: String },
+    Link { url: String },
     _Action { action: Callback<()> },
 }
 
 pub fn button(content: ButtonContent, effect: ButtonEffect) -> impl IntoView {
     match effect {
-        ButtonEffect::Link { url, target } => a()
+        ButtonEffect::Link { url } => a()
             .class("button")
             .href(url)
-            .target(target)
             .child(content.icon.map(|x| match x {
-                Icon::Url(url) => img().class("icon").src(url).into_any(),
+                Icon::_Url(url) => img().class("icon").src(url).into_any(),
                 Icon::Svg(svg) => span().class("icon").inner_html(svg).into_any(),
             }))
             .child(content.text)
@@ -39,7 +38,7 @@ pub fn button(content: ButtonContent, effect: ButtonEffect) -> impl IntoView {
         ButtonEffect::_Action { action } => leptos::html::button()
             .class("button")
             .child(content.icon.map(|x| match x {
-                Icon::Url(url) => img().class("icon").src(url).into_any(),
+                Icon::_Url(url) => img().class("icon").src(url).into_any(),
                 Icon::Svg(svg) => span().class("icon").inner_html(svg).into_any(),
             }))
             .child(content.text)
