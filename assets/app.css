@@ -3,7 +3,7 @@
 }
 
 body {
-    --_max-content-width: 90ch;
+    --_max-content-width: 75ch;
     --_min-margin-width: 1rem;
     display: grid;
     grid-template-columns: minmax(var(--_min-margin-width), 1fr) min(calc(100% - 2rem), var(--_max-content-width)) minmax(var(--_min-margin-width), 1fr);
@@ -11,7 +11,8 @@ body {
 }
 
 header,
-section {
+section,
+footer {
     grid-column: 2;
 }
 
@@ -53,6 +54,11 @@ header h1 {
     text-box-trim: trim-both;
 }
 
+footer {
+    text-align: center;
+    padding-block: 1rem;
+}
+
 .alert {
     --_computed-color: var(--_color, hsl(0 100 100));
     /* border: 1px solid var(--_computed-color); */
@@ -83,13 +89,22 @@ header h1 {
 .projects > article {
     border: 1px solid red;
     border-radius: var(--border-radius);
-    padding: 1.5rem;
     display: grid;
     gap: 1rem;
+    overflow: hidden;
 }
 
 .projects > article > img {
-    border-radius: var(--border-radius);
+    width: 100%;
+    object-fit: contain;
+}
+
+.projects > article > :not(img) {
+    margin-inline: 1.5rem;
+}
+
+.projects > article > :not(img):last-child {
+    margin-block-end: 1.5rem;
 }
 
 .tags,
@@ -100,8 +115,10 @@ header h1 {
 
 .text-tag {
     border-radius: 100vmax;
-    background-color: hsl(0 0 0 / 0.5);
-    padding: 0.25rem 0.5rem;
+    background-color: light-dark(hsl(0 0 0 / 0.1), hsl(0 0 0 / 0.5));
+    padding: 0.5rem 0.75rem;
+    text-box-edge: cap alphabetic;
+    text-box-trim: trim-both;
 }
 
 .button {
@@ -115,7 +132,7 @@ header h1 {
     color: inherit;
 }
 
-.button img {
+.button .icon {
     height: 1.5rem;
     aspect-ratio: 1;
 }

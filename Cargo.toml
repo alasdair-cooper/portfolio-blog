@@ -1,9 +1,10 @@
 [package]
+edition = "2024"
 name = "portfolio-blog"
 version = "0.1.0"
-edition = "2024"
 
 [dependencies]
 console_error_panic_hook = "0.1.7"
 jiff = "0.2.15"
 leptos = { version = "0.8.9", features = ["csr"] }
+phf = { version = "0.13.1", features = ["macros"] }

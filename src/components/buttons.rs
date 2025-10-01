@@ -1,15 +1,20 @@
 use leptos::{ev, html::*, prelude::*};
 
+pub enum Icon {
+    Url(String),
+    Svg(&'static str),
+}
+
 pub struct ButtonContent {
     pub text: String,
-    pub icon_url: Option<String>,
+    pub icon: Option<Icon>,
 }
 
 impl From<String> for ButtonContent {
     fn from(value: String) -> Self {
         Self {
             text: value,
-            icon_url: None,
+            icon: None,
         }
     }
 }
@@ -25,12 +30,18 @@ pub fn button(content: ButtonContent, effect: ButtonEffect) -> impl IntoView {
             .class("button")
             .href(url)
             .target(target)
-            .child(content.icon_url.map(|x| img().src(x)))
+            .child(content.icon.map(|x| match x {
+                Icon::Url(url) => img().class("icon").src(url).into_any(),
+                Icon::Svg(svg) => span().class("icon").inner_html(svg).into_any(),
+            }))
             .child(content.text)
             .into_any(),
         ButtonEffect::_Action { action } => leptos::html::button()
             .class("button")
-            .child(content.icon_url.map(|x| img().src(x)))
+            .child(content.icon.map(|x| match x {
+                Icon::Url(url) => img().class("icon").src(url).into_any(),
+                Icon::Svg(svg) => span().class("icon").inner_html(svg).into_any(),
+            }))
             .child(content.text)
             .on(ev::click, move |_| action.run(()))
             .into_any(),

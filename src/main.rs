@@ -31,20 +31,20 @@ fn app() -> impl IntoView {
         ProjectData {
             name: "C# LDM RSS Feed".into(),
             description: "".into(),
-            image_url: "https://lipsum.app/640x480/".into(),
+            image_url: "https://lipsum.app/1920x1080/".into(),
             start_date: Date::new(2025, 09, 13).unwrap(),
             end_date: None,
             tags: vec!["personal".into()],
             links: vec![Link {
                 url: "https://github.com/alasdair-cooper/csharplang-ldm-feed".into(),
-                icon_url: Some("images/github.svg".into()),
+                icon_name: Some("github".into()),
                 text: "GitHub".into(),
             }],
         },
         ProjectData {
             name: "ebi Portfolios".into(),
             description: "".into(),
-            image_url: "https://lipsum.app/640x480/".into(),
+            image_url: "https://lipsum.app/1920x1080/".into(),
             start_date: Date::new(2025, 05, 01).unwrap(),
             end_date: Some(Date::new(2023, 02, 01).unwrap()),
             tags: vec!["commercial".into()],
@@ -62,6 +62,7 @@ fn app() -> impl IntoView {
         header().into_any(),
         intro().into_any(),
         content(&projects).into_any(),
+        footer().into_any(),
     ]
 }
 
@@ -85,7 +86,7 @@ fn intro() -> impl IntoView {
              projects.",
         ))
         .child(p().child(
-            "Outside of programming, I enjoy running and cycling and I play violin & viola in a \
+            "Outside of programming, I enjoy running and cycling, and I play violin & viola in a \
              few amateur music groups.",
         ))
 }
@@ -138,7 +139,13 @@ fn project(project: &Project) -> impl IntoView {
                     .map(|x| {
                         button(
                             ButtonContent {
-                                icon_url: x.icon_url.clone(),
+                                icon: x.icon_name.as_ref().map(|x| {
+                                    Icon::Svg(
+                                        components::icons::ICON_MAP
+                                            .get(x.as_str())
+                                            .expect(format!("icon '{}' not found", x).as_str()),
+                                    )
+                                }),
                                 text: x.text.clone(),
                             },
                             ButtonEffect::Link {
@@ -152,10 +159,26 @@ fn project(project: &Project) -> impl IntoView {
         )
 }
 
+fn footer() -> impl IntoView {
+    leptos::html::footer()
+        .child("Made with ")
+        .child(
+            a().href("https://leptos.dev")
+                .target("_blank")
+                .child("Leptos"),
+        )
+        .child(". View the source code ")
+        .child(
+            a().child("here")
+                .href("https://github.com/alasdair-cooper/portfolio-blog"),
+        )
+        .child(".")
+}
+
 #[derive(Clone)]
 struct Link {
     url: String,
-    icon_url: Option<String>,
+    icon_name: Option<String>,
     text: String,
 }
 
