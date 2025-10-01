@@ -1,7 +1,42 @@
 #![feature(hash_map_macro)]
 
+mod alerts;
+mod buttons;
+mod tags {
+    use leptos::{html::*, prelude::*};
+
+    #[derive(Clone)]
+    pub enum TagData {
+        _Icon { id: String, icon_url: String },
+        Text { id: String, value: String },
+    }
+
+    impl TagData {
+        pub fn id(&self) -> &String {
+            match self {
+                TagData::_Icon { id, icon_url: _ } => id,
+                TagData::Text { id, value: _ } => id,
+            }
+        }
+    }
+
+    pub fn tag(tag: &TagData) -> impl IntoView {
+        match tag {
+            TagData::_Icon { id: _, icon_url } => img().src(icon_url.clone()).into_any(),
+            TagData::Text { id: _, value } => {
+                small().class("text-tag").child(value.clone()).into_any()
+            }
+        }
+    }
+}
+
+use crate::{
+    alerts::*,
+    buttons::{button, *},
+    tags::*,
+};
 use jiff::civil::Date;
-use leptos::{ev, html::*, prelude::*};
+use leptos::{html::*, prelude::*};
 
 fn main() {
     console_error_panic_hook::set_once();
@@ -83,65 +118,6 @@ fn intro() -> impl IntoView {
         ))
 }
 
-enum AlertLevel {
-    Info,
-    Warning,
-    Error,
-}
-
-impl AlertLevel {
-    fn class(&self) -> String {
-        match self {
-            AlertLevel::Info => "info".into(),
-            AlertLevel::Warning => "warning".into(),
-            AlertLevel::Error => "error".into(),
-        }
-    }
-}
-
-fn alert(level: AlertLevel, text: impl Into<String>) -> impl IntoView {
-    div()
-        .class(format!("alert {}", level.class()))
-        .child(text.into())
-}
-
-struct ButtonContent {
-    text: String,
-    icon_url: Option<String>,
-}
-
-impl From<String> for ButtonContent {
-    fn from(value: String) -> Self {
-        Self {
-            text: value,
-            icon_url: None,
-        }
-    }
-}
-
-enum ButtonEffect {
-    Link { url: String, target: String },
-    Action { action: Callback<()> },
-}
-
-fn button(content: ButtonContent, effect: ButtonEffect) -> impl IntoView {
-    match effect {
-        ButtonEffect::Link { url, target } => a()
-            .class("button")
-            .href(url)
-            .target(target)
-            .child(content.icon_url.map(|x| img().src(x)))
-            .child(content.text)
-            .into_any(),
-        ButtonEffect::Action { action } => leptos::html::button()
-            .class("button")
-            .child(content.icon_url.map(|x| img().src(x)))
-            .child(content.text)
-            .on(ev::click, move |_| action.run(()))
-            .into_any(),
-    }
-}
-
 fn content(projects: &Vec<Project>) -> impl IntoView {
     section()
         .class("projects")
@@ -202,28 +178,6 @@ fn project(project: &Project) -> impl IntoView {
                     .collect_view(),
             ),
         )
-}
-
-#[derive(Clone)]
-enum TagData {
-    Icon { id: String, icon_url: String },
-    Text { id: String, value: String },
-}
-
-impl TagData {
-    fn id(&self) -> &String {
-        match self {
-            TagData::Icon { id, icon_url: _ } => id,
-            TagData::Text { id, value: _ } => id,
-        }
-    }
-}
-
-fn tag(tag: &TagData) -> impl IntoView {
-    match tag {
-        TagData::Icon { id: _, icon_url } => img().src(icon_url.clone()).into_any(),
-        TagData::Text { id: _, value } => small().class("text-tag").child(value.clone()).into_any(),
-    }
 }
 
 #[derive(Clone)]
