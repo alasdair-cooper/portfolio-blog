@@ -1,0 +1,1 @@
+At Node4, I worked on an internal project comprising of a Blazor web app. It used some modern Azure services, including Azure AI Foundry for some basic LLM powered features.

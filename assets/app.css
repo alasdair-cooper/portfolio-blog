@@ -103,8 +103,12 @@ footer {
     margin-inline: 1.5rem;
 }
 
-.projects > article > :not(img):last-child {
-    margin-block-end: 1.5rem;
+.projects > article {
+    padding-block-end: 1.5rem;
+}
+
+.projects > article:not(:has(img)) {
+    padding-block-start: 1.5rem;
 }
 
 .tags,

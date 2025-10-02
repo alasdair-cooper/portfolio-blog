@@ -2,6 +2,8 @@
 
 mod components;
 
+use std::cmp::Ordering;
+
 use crate::components::{
     alerts::*,
     buttons::{button, *},
@@ -29,9 +31,31 @@ fn app() -> impl IntoView {
 
     let project_data = vec![
         ProjectData {
+            name: "Node4".into(),
+            description: include_str!("../assets/content/node4.md").into(),
+            image_url: None,
+            start_date: Date::new(2023, 02, 01).unwrap(),
+            end_date: None,
+            tags: vec!["commercial".into()],
+            links: vec![],
+        },
+        ProjectData {
             name: "C# LDM RSS Feed".into(),
             description: include_str!("../assets/content/csharplang_ldm_feed.md").into(),
-            image_url: "images/csharplang_ldm_feed.png".into(),
+            image_url: Some("images/csharplang_ldm_feed.png".into()),
+            start_date: Date::new(2025, 09, 13).unwrap(),
+            end_date: None,
+            tags: vec!["personal".into()],
+            links: vec![Link {
+                url: "https://github.com/alasdair-cooper/csharplang-ldm-feed".into(),
+                icon_name: Some("github".into()),
+                text: "GitHub".into(),
+            }],
+        },
+        ProjectData {
+            name: "C# LDM RSS Feed".into(),
+            description: include_str!("../assets/content/password_generator.md").into(),
+            image_url: None,
             start_date: Date::new(2025, 09, 13).unwrap(),
             end_date: None,
             tags: vec!["personal".into()],
@@ -44,7 +68,7 @@ fn app() -> impl IntoView {
         ProjectData {
             name: "ebi Portfolios".into(),
             description: include_str!("../assets/content/ebi.md").into(),
-            image_url: "images/ebi.png".into(),
+            image_url: Some("images/ebi.png".into()),
             start_date: Date::new(2023, 02, 01).unwrap(),
             end_date: Some(Date::new(2025, 05, 01).unwrap()),
             tags: vec!["commercial".into()],
@@ -57,6 +81,8 @@ fn app() -> impl IntoView {
     for project in project_data {
         projects.push(project.to_project(&tags));
     }
+
+    projects.sort_by(|a, b| a.cmp_dates(b));
 
     vec![
         header().into_any(),
@@ -93,12 +119,12 @@ fn content(projects: &Vec<Project>) -> impl IntoView {
         //     AlertLevel::Info,
         //     "Click on a tag or technology to filter by it.",
         // ))
-        .child(projects.iter().map(|x| project(x)).collect_view())
+        .child(projects.iter().rev().map(|x| project(x)).collect_view())
 }
 
 fn project(project: &Project) -> impl IntoView {
     article()
-        .child(img().src(project.image_url.clone()))
+        .child(project.image_url.as_ref().map(|x| img().src(x)))
         .child(
             div().class("tags").child(
                 project
@@ -151,19 +177,9 @@ fn project(project: &Project) -> impl IntoView {
 }
 
 fn footer() -> impl IntoView {
-    leptos::html::footer()
-        .child("Made with ")
-        .child(
-            a().href("https://leptos.dev")
-                .target("_blank")
-                .child("Leptos"),
-        )
-        .child(". View the source code ")
-        .child(
-            a().child("here")
-                .href("https://github.com/alasdair-cooper/portfolio-blog"),
-        )
-        .child(".")
+    leptos::html::footer().inner_html(markdown::to_html(include_str!(
+        "../assets/content/footer.md"
+    )))
 }
 
 #[derive(Clone)]
@@ -176,7 +192,7 @@ struct Link {
 struct ProjectData {
     name: String,
     description: String,
-    image_url: String,
+    image_url: Option<String>,
     tags: Vec<String>,
     links: Vec<Link>,
     start_date: Date,
@@ -211,9 +227,20 @@ impl ProjectData {
 struct Project {
     name: String,
     description: String,
-    image_url: String,
+    image_url: Option<String>,
     tags: Vec<TagData>,
     links: Vec<Link>,
     start_date: Date,
     end_date: Option<Date>,
+}
+
+impl Project {
+    fn cmp_dates(&self, other: &Self) -> Ordering {
+        match (self.end_date, other.end_date) {
+            (Some(a), Some(b)) => a.cmp(&b),
+            (Some(_), None) => Ordering::Less,
+            (None, Some(_)) => Ordering::Greater,
+            (None, None) => self.start_date.cmp(&other.start_date),
+        }
+    }
 }
