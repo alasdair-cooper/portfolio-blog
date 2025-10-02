@@ -53,14 +53,14 @@ fn app() -> impl IntoView {
             }],
         },
         ProjectData {
-            name: "C# LDM RSS Feed".into(),
+            name: "Password Generator".into(),
             description: include_str!("../assets/content/password_generator.md").into(),
             image_url: None,
-            start_date: Date::new(2025, 09, 13).unwrap(),
-            end_date: None,
+            start_date: Date::new(2024, 11, 23).unwrap(),
+            end_date: Some(Date::new(2024, 12, 07).unwrap()),
             tags: vec!["personal".into()],
             links: vec![Link {
-                url: "https://github.com/alasdair-cooper/csharplang-ldm-feed".into(),
+                url: "https://github.com/alasdair-cooper/password-generator".into(),
                 icon_name: Some("github".into()),
                 text: "GitHub".into(),
             }],
