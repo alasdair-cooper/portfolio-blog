@@ -94,7 +94,7 @@ fn app() -> impl IntoView {
 
 fn header() -> impl IntoView {
     leptos::html::header()
-        .child(img().src("images/me.jpg"))
+        .child(img().src("images/me.png"))
         .child(
             hgroup()
                 .child(h1().child("Alasdair Cooper"))
