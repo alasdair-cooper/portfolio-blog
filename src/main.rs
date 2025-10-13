@@ -10,7 +10,10 @@ use crate::components::{
     tags::*,
 };
 use jiff::civil::Date;
-use leptos::{html::*, prelude::*};
+use leptos::{
+    html::{label, *},
+    prelude::*,
+};
 
 fn main() {
     console_error_panic_hook::set_once();
@@ -85,6 +88,7 @@ fn app() -> impl IntoView {
     projects.sort_by(|a, b| a.cmp_dates(b));
 
     vec![
+        theme_picker().into_any(),
         header().into_any(),
         intro().into_any(),
         content(&projects).into_any(),
@@ -100,6 +104,35 @@ fn header() -> impl IntoView {
                 .child(h1().child("Alasdair Cooper"))
                 .child(p().child(".NET Web Developer")),
         )
+}
+
+fn theme_picker() -> impl IntoView {
+    span()
+        .class("theme-picker")
+        .child(
+            input()
+                .attr("type", "radio")
+                .name("theme")
+                .id("theme-picker-auto")
+                .checked(true),
+        )
+        .child(label().attr("for", "theme-picker-auto").child("Auto"))
+        .child(
+            input()
+                .attr("type", "radio")
+                .name("theme")
+                .id("theme-picker-light")
+                .attr("data-theme", "light"),
+        )
+        .child(label().attr("for", "theme-picker-light").child("Light"))
+        .child(
+            input()
+                .attr("type", "radio")
+                .name("theme")
+                .id("theme-picker-dark")
+                .attr("data-theme", "dark"),
+        )
+        .child(label().attr("for", "theme-picker-dark").child("Dark"))
 }
 
 fn intro() -> impl IntoView {

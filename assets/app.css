@@ -3,18 +3,41 @@
     --darken: light-dark(hsl(0 0 0 / 0.1), hsl(0 0 0 / 0.5));
 }
 
+html:has(#theme-picker-light:checked) {
+    color-scheme: light;
+}
+
+html:has(#theme-picker-dark:checked) {
+    color-scheme: dark;
+}
+
 body {
     --_max-content-width: 75ch;
-    --_min-margin-width: 1rem;
+    --_min-margin-width: 0ch;
     display: grid;
-    grid-template-columns: minmax(var(--_min-margin-width), 1fr) min(calc(100% - 2rem), var(--_max-content-width)) minmax(var(--_min-margin-width), 1fr);
+    grid-template-columns: [start-gutter-start] minmax(var(--_min-margin-width), 1fr) [start-gutter-end content-start] min(calc(100% - 2 * var(--_min-margin-width)), var(--_max-content-width)) [content-end end-gutter-start] minmax(var(--_min-margin-width), 1fr) [end-gutter-end];
     gap: 4rem;
+    position: relative;
+}
+
+.theme-picker {
+    position: absolute;
+    grid-row: 1;
+    grid-column: end-gutter;
+    justify-self: end;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.theme-picker label ~ input {
+    margin-inline-start: 0.5rem;
 }
 
 header,
 section,
 footer {
-    grid-column: 2;
+    grid-column: content;
 }
 
 body > section > h2 {
