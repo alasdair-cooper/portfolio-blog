@@ -1,19 +1,19 @@
 use leptos::{html::*, prelude::*};
 
-pub enum AlertLevel {
+pub enum _AlertLevel {
     Info,
 }
 
-impl AlertLevel {
-    pub fn class(&self) -> String {
+impl _AlertLevel {
+    pub fn _class(&self) -> String {
         match self {
-            AlertLevel::Info => "info".into(),
+            _AlertLevel::Info => "info".into(),
         }
     }
 }
 
-pub fn alert(level: AlertLevel, text: impl Into<String>) -> impl IntoView {
+pub fn _alert(level: _AlertLevel, text: impl Into<String>) -> impl IntoView {
     div()
-        .class(format!("alert {}", level.class()))
+        .class(format!("alert {}", level._class()))
         .child(text.into())
 }
