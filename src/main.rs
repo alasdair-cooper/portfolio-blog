@@ -11,6 +11,7 @@ use crate::components::{
 };
 use jiff::civil::Date;
 use leptos::{
+    ev,
     html::{label, *},
     prelude::*,
 };
@@ -107,32 +108,65 @@ fn header() -> impl IntoView {
 }
 
 fn theme_picker() -> impl IntoView {
+    let is_current_theme = |val: Option<&str>| {
+        window()
+            .local_storage()
+            .ok()
+            .flatten()
+            .and_then(|storage| storage.get_item("theme").ok().flatten())
+            .as_deref()
+            == val
+    };
+
+    let persist_to_local_storage = move |val: Option<&str>| {
+        window()
+            .local_storage()
+            .ok()
+            .flatten()
+            .and_then(|storage| match val {
+                Some(v) => storage.set_item("theme", v).ok(),
+                None => storage.remove_item("theme").ok(),
+            })
+            .unwrap_or_default();
+    };
+
     span()
         .class("theme-picker")
         .child(
-            input()
-                .attr("type", "radio")
-                .name("theme")
-                .id("theme-picker-auto")
-                .checked(true),
+            label()
+                .child(
+                    input()
+                        .attr("type", "radio")
+                        .name("theme")
+                        .on(ev::click, move |_| persist_to_local_storage(None))
+                        .checked(is_current_theme(None)),
+                )
+                .child("Auto"),
         )
-        .child(label().attr("for", "theme-picker-auto").child("Auto"))
         .child(
-            input()
-                .attr("type", "radio")
-                .name("theme")
-                .id("theme-picker-light")
-                .attr("data-theme", "light"),
+            label()
+                .child(
+                    input()
+                        .attr("type", "radio")
+                        .name("theme")
+                        .attr("data-theme", "light")
+                        .on(ev::click, move |_| persist_to_local_storage(Some("light")))
+                        .checked(is_current_theme(Some("light"))),
+                )
+                .child("Light"),
         )
-        .child(label().attr("for", "theme-picker-light").child("Light"))
         .child(
-            input()
-                .attr("type", "radio")
-                .name("theme")
-                .id("theme-picker-dark")
-                .attr("data-theme", "dark"),
+            label()
+                .child(
+                    input()
+                        .attr("type", "radio")
+                        .name("theme")
+                        .attr("data-theme", "dark")
+                        .on(ev::click, move |_| persist_to_local_storage(Some("dark")))
+                        .checked(is_current_theme(Some("dark"))),
+                )
+                .child("Dark"),
         )
-        .child(label().attr("for", "theme-picker-dark").child("Dark"))
 }
 
 fn intro() -> impl IntoView {

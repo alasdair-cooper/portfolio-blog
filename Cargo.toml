@@ -9,3 +9,4 @@ jiff = "0.2.15"
 leptos = { version = "0.8.9", features = ["csr"] }
 markdown = "1.0.0"
 phf = { version = "0.13.1", features = ["macros"] }
+web-sys = { version = "0.3.81", features = ["Storage"] }
