@@ -5,7 +5,6 @@ mod components;
 use std::cmp::Ordering;
 
 use crate::components::{
-    alerts::*,
     buttons::{button, *},
     tags::*,
 };
@@ -118,15 +117,21 @@ fn theme_picker() -> impl IntoView {
             == val
     };
 
-    let persist_to_local_storage = move |val: Option<&str>| {
+    let clear_local_storage = || {
         window()
             .local_storage()
             .ok()
             .flatten()
-            .and_then(|storage| match val {
-                Some(v) => storage.set_item("theme", v).ok(),
-                None => storage.remove_item("theme").ok(),
-            })
+            .and_then(|storage| storage.remove_item("theme").ok())
+            .unwrap_or_default();
+    };
+
+    let persist_to_local_storage = move |val: &str| {
+        window()
+            .local_storage()
+            .ok()
+            .flatten()
+            .and_then(|storage| storage.set_item("theme", val).ok())
             .unwrap_or_default();
     };
 
@@ -138,7 +143,7 @@ fn theme_picker() -> impl IntoView {
                     input()
                         .attr("type", "radio")
                         .name("theme")
-                        .on(ev::click, move |_| persist_to_local_storage(None))
+                        .on(ev::click, move |_| clear_local_storage())
                         .checked(is_current_theme(None)),
                 )
                 .child("Auto"),
@@ -150,7 +155,7 @@ fn theme_picker() -> impl IntoView {
                         .attr("type", "radio")
                         .name("theme")
                         .attr("data-theme", "light")
-                        .on(ev::click, move |_| persist_to_local_storage(Some("light")))
+                        .on(ev::click, move |_| persist_to_local_storage("light"))
                         .checked(is_current_theme(Some("light"))),
                 )
                 .child("Light"),
@@ -162,7 +167,7 @@ fn theme_picker() -> impl IntoView {
                         .attr("type", "radio")
                         .name("theme")
                         .attr("data-theme", "dark")
-                        .on(ev::click, move |_| persist_to_local_storage(Some("dark")))
+                        .on(ev::click, move |_| persist_to_local_storage("dark"))
                         .checked(is_current_theme(Some("dark"))),
                 )
                 .child("Dark"),
