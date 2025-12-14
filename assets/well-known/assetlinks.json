@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.alasdair_cooper.watch_history",
+            "sha256_cert_fingerprints": [
+                "F5:12:2C:DB:EF:C8:D1:AF:B9:93:98:A7:ED:87:3F:37:F2:4D:97:AD:B9:16:E4:D0:B3:A6:B0:7E:BE:29:A0:02"
+            ]
+        }
+    }
+]
